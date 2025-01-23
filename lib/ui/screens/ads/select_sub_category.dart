@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:offertree/ui/screens/ads/ad_create.dart';
 
-class Subcategory extends StatelessWidget {
+class SelectSubCategory extends StatelessWidget {
   final List<ApplianceItem> appliances = [
     ApplianceItem(
       icon: Icon(Icons.cloud),
@@ -88,7 +89,10 @@ class Subcategory extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddItemDetails())
+                    );
                   },
                 );
               },

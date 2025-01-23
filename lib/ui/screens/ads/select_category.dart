@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:offertree/ui/screens/ads/select_sub_category.dart';
 
-class CategoryList extends StatelessWidget {
+class SelectCategory extends StatelessWidget {
   final List<Map<String, String>> categories = [
-    {"name": "Home appliances", "icon": "https://via.placeholder.com/50"},
-    {"name": "Furniture, ", "icon": "https://via.placeholder.com/50"},
-    {"name": "Clothing & Accessories", "icon": "https://via.placeholder.com/50"},
-    {"name": "Pets", "icon": "https://via.placeholder.com/50"},
-    {"name": "Cars & Vehicles", "icon": "https://via.placeholder.com/50"},
-    {"name": "Electronics", "icon": "https://via.placeholder.com/50"},
-    {"name": "Cameras & Imaging", "icon": "https://via.placeholder.com/50"},
-    {"name": "Jewelry & Watches", "icon": "https://via.placeholder.com/50"},
-    {"name": "Mobile Phones & Tablets", "icon": "https://via.placeholder.com/50"},
-    {"name": "Consoles and Video Games", "icon": "https://via.placeholder.com/50"},
-    {"name": "Jobs", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
-    {"name": "Musical Instruments", "icon": "https://via.placeholder.com/50"},
+    {"name": "Home appliances", "icon": ""},
+    {"name": "Furniture, ", "icon": ""},
+    {"name": "Clothing & Accessories", "icon": ""},
+    {"name": "Pets", "icon": ""},
+    {"name": "Cars & Vehicles", "icon": ""},
+    {"name": "Electronics", "icon": ""},
+    {"name": "Cameras & Imaging", "icon": ""},
+    {"name": "Jewelry & Watches", "icon": ""},
+    {"name": "Mobile Phones & Tablets", "icon": ""},
+    {"name": "Consoles and Video Games", "icon": ""},
+    {"name": "Jobs", "icon": ""},
 
   ];
 
@@ -30,8 +24,8 @@ class CategoryList extends StatelessWidget {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         leading: BackButton(),
-        title: Text('Categories',
-        style: Theme.of(context).textTheme.titleMedium,),
+        title: Text('Select Category for Ad Listing',
+          style: Theme.of(context).textTheme.titleMedium,),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
@@ -45,7 +39,14 @@ class CategoryList extends StatelessWidget {
         ),
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          return Container(
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SelectSubCategory())
+              );
+            },
+          child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -72,6 +73,7 @@ class CategoryList extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           );
         },
       ),

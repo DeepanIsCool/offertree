@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:offertree/ui/screens/ads/ad_details.dart';
 import 'package:offertree/ui/screens/category/categorylist.dart';
 import 'package:offertree/ui/screens/category/subcategory.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
+import 'package:offertree/ui/components/slider.dart';
+import 'package:offertree/ui/components/infinitecards.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -39,7 +42,6 @@ class _DashboardState extends State<Dashboard> {
     // Simulate API call with delay
     await Future.delayed(const Duration(seconds: 1));
 
-    // Add new items
     final newItems = List.generate(1, (index) => {
       'price': 750.00 + (index * 100),
       'title': 'Item ${infiniteItems.length + index + 1}',
@@ -101,8 +103,13 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 const SizedBox(height: 24),
-
-                // Categories Section
+                SliderWidget(imageUrls:
+                [
+                  'https://picsum.photos/id/237/200/300',
+                  'https://picsum.photos/seed/picsum/200/300',
+                  'https://picsum.photos/200/300?grayscale',
+                ]),
+                const SizedBox(height: 24),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -126,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryList(),
+                              builder: (context) => Subcategory(),
                             ),
                           );
                         },
@@ -138,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryList(),
+                              builder: (context) => Subcategory(),
                             ),
                           );
                         },
@@ -150,7 +157,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryList(),
+                              builder: (context) => Subcategory(),
                             ),
                           );
                         },
@@ -162,7 +169,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryList(),
+                              builder: (context) => Subcategory(),
                             ),
                           );
                         },
@@ -174,7 +181,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryList(),
+                              builder: (context) => Subcategory(),
                             ),
                           );
                         },
@@ -251,7 +258,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       );
                     }
-                    return _buildInfiniteCard(infiniteItems[index]);
+                    return buildInfiniteCard(infiniteItems[index]);
                   },
                 ),
               ],
@@ -259,96 +266,21 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      bottomNavigationBar: buildBottomNavigationBar(),
-    );
-  }
-
-  Widget _buildInfiniteCard(Map<String, dynamic> item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(2, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-            child: Image.asset(
-              'assets/svg/Illustrators/onbo_a.png',
-              height: 120,
-              width: 120,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '\$${item['price'].toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.cyan[400],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item['title'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          item['location'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Icon(
-              Icons.favorite_border,
-              color: Colors.cyan[400],
-            ),
-          ),
-        ],
-      ),
+      bottomNavigationBar: buildBottomNavigationBar(context),
     );
   }
 
   Widget _buildPropertyCard() {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VillaDetailsScreen(),
+          ),
+        );
+      },
+    child: Container(
       width: 200,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
@@ -423,6 +355,7 @@ class _DashboardState extends State<Dashboard> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -456,6 +389,7 @@ class _DashboardState extends State<Dashboard> {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 12,
+                fontWeight: FontWeight.normal,
                 height: 1.2,
               ),
             ),
@@ -570,77 +504,4 @@ class _DashboardState extends State<Dashboard> {
       ],
     );
   }
-
-  // Widget _buildBottomNavigationBar() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(5),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.1),
-  //           blurRadius: 8,
-  //           offset: const Offset(0, -2),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 8),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //         children: [
-  //           _buildNavItem('assets/svg/bottomnav/home_active.png', 'Home', true),
-  //           _buildNavItem('assets/svg/bottomnav/chat_active.png', 'Chat', false),
-  //           _buildAddButton(),
-  //           _buildNavItem('assets/svg/bottomnav/myads_active.png', 'Ads', false),
-  //           _buildNavItem('assets/svg/bottomnav/profile_active.png', 'Profile', false),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _buildNavItem(String imagePath, String label, bool isSelected) {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       Image.asset(
-  //         imagePath,
-  //         height: 24, // Adjust size as needed
-  //         width: 24,
-  //       ),
-  //       const SizedBox(height: 4),
-  //       Text(
-  //         label,
-  //         style: TextStyle(
-  //           fontSize: 12,
-  //           color: isSelected ? Colors.cyan[400] : Colors.grey[600],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-  //
-  // Widget _buildAddButton() {
-  //   return Container(
-  //     padding: const EdgeInsets.all(12),
-  //     decoration: BoxDecoration(
-  //       color: Colors.cyan[400],
-  //       shape: BoxShape.circle,
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.cyan.withOpacity(0.2),
-  //           spreadRadius: 4,
-  //           blurRadius: 6,
-  //           offset: Offset(0, 4), // Shadow position
-  //         ),
-  //       ],
-  //     ),
-  //     child: const Icon(
-  //       Icons.add,
-  //       color: Colors.white,
-  //       size: 30,
-  //     ),
-  //   );
-  // }
 }
