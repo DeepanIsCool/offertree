@@ -1,0 +1,44 @@
+name: offertree
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  smooth_page_indicator: ^1.2.0+3
+  flutter_svg_provider: ^1.0.7
+  flutter_native_splash: ^2.4.4
+  
+flutter_native_splash:
+  image: assets/1.png
+  color: "#ffffff"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/1.png
+    - assets/2.png
+    - assets/3.png
+    - assets/svg/Logo/splashlogo.png
+    - assets/svg/Illustrators/onbo_a.png
+    - assets/svg/Illustrators/onbo_b.png
+    - assets/svg/Illustrators/onbo_c.png
+    - assets/svg/google_icon.png
+    - assets/svg/Illustrators/location_access.png
+    - assets/svg/bottomnav/chat_active.png
+    - assets/svg/bottomnav/home_active.png
+    - assets/svg/bottomnav/myads_active.png
+    - assets/svg/bottomnav/profile_active.png
