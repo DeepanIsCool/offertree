@@ -16,6 +16,7 @@ dependencies:
   flutter_native_splash: ^2.4.4
   dotted_border: ^2.1.0
   image_picker: ^1.1.2
+  iconsax: ^0.0.8
   
 flutter_native_splash:
   image: assets/1.png

@@ -23,10 +23,11 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Color(0xFF576bd6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       'Sign up',
                       style: TextStyle(
-                        color: Colors.teal,
+                        color: Color(0xFF576bd6),
                       ),
                     ),
                   ),
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 16),
               Center(
                 child: RichText(
                   textAlign: TextAlign.center,
@@ -175,12 +176,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       const TextSpan(text: 'By Signing Up/Logging in, You agree to our '),
                       TextSpan(
                         text: 'Terms of Service',
-                        style: TextStyle(color: Colors.teal),
+                        style: TextStyle(color: Color(0xFF576bd6)),
                       ),
                       const TextSpan(text: ' and '),
                       TextSpan(
                         text: 'Privacy Policy',
-                        style: TextStyle(color: Colors.teal),
+                        style: TextStyle(color: Color(0xFF576bd6)),
                       ),
                     ],
                   ),

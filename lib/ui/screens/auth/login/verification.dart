@@ -78,7 +78,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     child: const Text(
                       'Change',
                       style: TextStyle(
-                        color: Colors.teal,
+                        color: Color(0xFF576bd6),
                         fontSize: 14,
                       ),
                     ),
@@ -106,13 +106,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         contentPadding: EdgeInsets.zero,
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.teal,
+                            color: Color(0xFF576bd6),
                             width: 2,
                           ),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors.teal,
+                            color: Color(0xFF576bd6),
                             width: 2,
                           ),
                         ),
@@ -151,7 +151,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Color(0xFF576bd6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

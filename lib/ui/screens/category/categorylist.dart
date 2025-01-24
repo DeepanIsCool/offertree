@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:offertree/ui/screens/category/subcategory.dart';
 
 class CategoryList extends StatelessWidget {
   final List<Map<String, String>> categories = [
@@ -45,7 +46,16 @@ class CategoryList extends StatelessWidget {
         ),
         itemCount: categories.length,
         itemBuilder: (context, index) {
-          return Container(
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Subcategory(),
+                ),
+              );
+            },
+          child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -72,6 +82,7 @@ class CategoryList extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           );
         },
       ),

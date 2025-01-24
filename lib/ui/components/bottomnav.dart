@@ -4,119 +4,110 @@ import 'package:offertree/ui/screens/dashboard/home.dart';
 import 'package:offertree/ui/screens/profile/profile.dart';
 import 'package:offertree/ui/screens/ads/select_category.dart';
 import 'package:offertree/ui/screens/ads/list_ads.dart';
+import 'package:iconsax/iconsax.dart';
 
-Widget buildBottomNavigationBar(BuildContext context) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(5),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 8,
-          offset: const Offset(0, -2),
-        ),
-      ],
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(
-              'assets/svg/bottomnav/home_active.png',
-              'Home',
-              true,
-                  () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Dashboard())
-              )
-          ),
-          _buildNavItem(
-              'assets/svg/bottomnav/chat_active.png',
-              'Chat',
-              false,
-                  () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Chats())
-              )
-          ),
-          _buildAddButton(context),
-          _buildNavItem(
-              'assets/svg/bottomnav/myads_active.png',
-              'Ads',
-              false,
-                  () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ListAds())
-              )
-          ),
-          _buildNavItem(
-              'assets/svg/bottomnav/profile_active.png',
-              'Profile',
-              false,
-                  () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Profile())
-              )
-          ),
-        ],
-      ),
-    ),
-  );
+class BottomNavigation extends StatefulWidget {
+  const BottomNavigation({Key? key}) : super(key: key);
+
+  @override
+  _BottomNavigationState createState() => _BottomNavigationState();
 }
 
-Widget _buildNavItem(String imagePath, String label, bool isSelected, VoidCallback onTap) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(
-          imagePath,
-          height: 24,
-          width: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isSelected ? Colors.cyan[400] : Colors.grey[600],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+class _BottomNavigationState extends State<BottomNavigation> {
+  int _currentIndex = 0;
 
-Widget _buildAddButton(BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SelectCategory())
-      );
-    },
-    child: Container(
-      padding: const EdgeInsets.all(12),
+  final List<Widget> _pages = [
+    Dashboard(),
+    Chats(),
+    SelectCategory(),
+    ListAds(),
+    Profile(),
+  ];
+
+  void _onItemTapped(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => _pages[index]),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
       decoration: BoxDecoration(
-        color: Colors.cyan[400],
-        shape: BoxShape.circle,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
-            color: Colors.cyan.withOpacity(0.2),
-            spreadRadius: 4,
-            blurRadius: 6,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
-      child: const Icon(
-        Icons.add,
-        color: Colors.white,
-        size: 30,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Iconsax.home, "Home", _currentIndex == 0, () => _onItemTapped(0)),
+            _buildNavItem(Iconsax.message, "Chats", _currentIndex == 1, () => _onItemTapped(1)),
+            _buildAddButton(),
+            _buildNavItem(Iconsax.discount_circle, "Ads", _currentIndex == 3, () => _onItemTapped(3)),
+            _buildNavItem(Iconsax.user, "Profile", _currentIndex == 4, () => _onItemTapped(4)),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: Color(0xFF576bd6),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Color(0xFF576bd6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: () => _onItemTapped(2),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Color(0xFF576bd6),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF576bd6).withOpacity(0.2),
+              spreadRadius: 4,
+              blurRadius: 6,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+    );
+  }
 }

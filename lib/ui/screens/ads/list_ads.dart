@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:offertree/ui/components/bottomnav.dart';
 import 'package:offertree/ui/components/infinitecards.dart';
 
 class ListAds extends StatelessWidget {
@@ -54,6 +55,7 @@ class ListAds extends StatelessWidget {
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavigation(),
       ),
     );
   }

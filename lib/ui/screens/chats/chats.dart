@@ -1,4 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:offertree/ui/components/bottomnav.dart';
+
 
 class Chats extends StatefulWidget {
   @override
@@ -10,12 +13,13 @@ class ChatsState extends State<Chats> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
-        title: Text('Chat Screen'),
+        leading: BackButton(),
+        title: Text('Chats',
+          style: Theme.of(context).textTheme.titleMedium,),
+        centerTitle: true,
+        backgroundColor: Colors.white,
       ),
+      bottomNavigationBar: BottomNavigation(),
     );
   }
 }

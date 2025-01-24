@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 Widget buildInfiniteCard(Map<String, dynamic> item) {
   return Container(
@@ -36,7 +37,7 @@ Widget buildInfiniteCard(Map<String, dynamic> item) {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.cyan[400],
+                    color: Color(0xFF576bd6),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -51,7 +52,7 @@ Widget buildInfiniteCard(Map<String, dynamic> item) {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on_outlined,
+                      Iconsax.location,
                       size: 16,
                       color: Colors.grey[600],
                     ),
@@ -75,8 +76,8 @@ Widget buildInfiniteCard(Map<String, dynamic> item) {
         Padding(
           padding: const EdgeInsets.all(12),
           child: Icon(
-            Icons.favorite_border,
-            color: Colors.cyan[400],
+            Iconsax.heart5,
+            color: Colors.redAccent,
           ),
         ),
       ],

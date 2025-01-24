@@ -49,7 +49,7 @@ class LocationSelector extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Color(0xFF576bd6),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -78,7 +78,7 @@ class LocationSelector extends StatelessWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: Colors.teal),
+                    side: BorderSide(color: Color(0xFF576bd6)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -86,7 +86,7 @@ class LocationSelector extends StatelessWidget {
                   child: Text(
                     'Other Location',
                     style: TextStyle(
-                      color: Colors.teal,
+                      color: Color(0xFF576bd6),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

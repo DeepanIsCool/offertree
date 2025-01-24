@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/screens/ads/ad_details.dart';
 import 'package:offertree/ui/screens/category/categorylist.dart';
 import 'package:offertree/ui/screens/category/subcategory.dart';
@@ -73,11 +74,10 @@ class _DashboardState extends State<Dashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Location Section
                 Row(
                   children: [
-                    Icon(Icons.location_on_outlined,
-                      color: Colors.teal,
+                    Icon(Iconsax.location,
+                      color: Color(0xFF576bd6),
                       size: 24,
                     ),
                     const SizedBox(width: 8),
@@ -115,7 +115,7 @@ class _DashboardState extends State<Dashboard> {
                   child: Row(
                     children: [
                       _buildCategoryItem(
-                        icon: Icons.home,
+                        icon: Iconsax.home,
                         label: 'Home',
                         onTap: () {
                           Navigator.push(
@@ -127,7 +127,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.chair_outlined,
+                        icon: Iconsax.coffee,
                         label: 'Furnitures',
                         onTap: () {
                           Navigator.push(
@@ -139,7 +139,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.checkroom_outlined,
+                        icon: Iconsax.cloud,
                         label: 'Clothing',
                         onTap: () {
                           Navigator.push(
@@ -151,7 +151,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.pets_outlined,
+                        icon: Iconsax.pet,
                         label: 'Pets',
                         onTap: () {
                           Navigator.push(
@@ -163,7 +163,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.directions_car_outlined,
+                        icon: Iconsax.car,
                         label: 'Vehicles',
                         onTap: () {
                           Navigator.push(
@@ -175,7 +175,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.headphones,
+                        icon: Iconsax.monitor,
                         label: 'Electronic',
                         onTap: () {
                           Navigator.push(
@@ -187,7 +187,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Icons.format_align_center,
+                        icon: Iconsax.more_square,
                         label: 'All',
                         onTap: () {
                           Navigator.push(
@@ -266,17 +266,18 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
-      bottomNavigationBar: buildBottomNavigationBar(context),
+      bottomNavigationBar: BottomNavigation(),
     );
   }
 
   Widget _buildPropertyCard() {
+    bool isLiked = false;
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VillaDetailsScreen(),
+            builder: (context) => AdDetails(),
           ),
         );
       },
@@ -304,9 +305,16 @@ class _DashboardState extends State<Dashboard> {
               Positioned(
                 right: 8,
                 top: 8,
-                child: Icon(
-                  Icons.favorite_border,
-                  color: Colors.cyan,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isLiked = !isLiked;
+                    });
+                  },
+                  child: Icon(
+                    Iconsax.heart5,
+                    color: Colors.redAccent,
+                  ),
                 ),
               ),
             ],
@@ -321,7 +329,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.cyan,
+                    color: Color(0xFF576bd6),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -336,7 +344,7 @@ class _DashboardState extends State<Dashboard> {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on_outlined,
+                      Iconsax.location,
                       size: 16,
                       color: Colors.grey[600],
                     ),
@@ -363,7 +371,8 @@ class _DashboardState extends State<Dashboard> {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
-  }) {
+  })
+  {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -374,12 +383,12 @@ class _DashboardState extends State<Dashboard> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.cyan[50],
+                color: Color(0xFF576bd6),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: Colors.cyan[400],
+                color: Colors.white,
                 size: 30,
               ),
             ),
@@ -425,8 +434,8 @@ class _DashboardState extends State<Dashboard> {
                 right: 8,
                 top: 8,
                 child: Icon(
-                  Icons.favorite_border,
-                  color: Colors.cyan[400],
+                  Iconsax.heart5,
+                  color: Colors.redAccent,
                 ),
               ),
             ],
@@ -441,7 +450,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.cyan[400],
+                    color: Color(0xFF576bd6),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -456,7 +465,7 @@ class _DashboardState extends State<Dashboard> {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on_outlined,
+                      Iconsax.location,
                       size: 14,
                       color: Colors.grey[600],
                     ),
@@ -492,7 +501,7 @@ class _DashboardState extends State<Dashboard> {
         TextButton(
           onPressed: () {},
           style: TextButton.styleFrom(
-            backgroundColor: Colors.cyan,
+            backgroundColor: Color(0xFF576bd6),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             shape: RoundedRectangleBorder(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:offertree/ui/components/slider.dart';
 
-class VillaDetailsScreen extends StatelessWidget {
+class AdDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

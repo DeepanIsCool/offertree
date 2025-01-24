@@ -20,7 +20,7 @@ class SplashScreen extends StatelessWidget {
         statusBarIconBrightness: Brightness.light,
       ),
       child: Scaffold(
-        backgroundColor: Colors.teal,
+        backgroundColor: Color((0xFF576bd6)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

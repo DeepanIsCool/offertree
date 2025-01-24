@@ -138,10 +138,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     width: 70,
                     height: 70,
                     decoration: BoxDecoration(
-                      color: Colors.teal,
+                      color: Color(0xFF576bd6),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.teal.withOpacity(0.8),
+                          color: Color(0xFF576bd6).withOpacity(0.8),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                           spreadRadius: 2,
@@ -179,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
               height: 56,
               minWidth: 201,
-              color: Colors.teal,
+              color: Color(0xFF576bd6),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
@@ -220,7 +220,7 @@ class IndicatorBuilder extends StatelessWidget {
             width: selectedIndex == index ? 24 : 10,
             height: 10,
             decoration: BoxDecoration(
-              color: Colors.teal,
+              color: Color(0xFF576bd6),
               borderRadius: BorderRadius.circular(6),
             ),
           );
