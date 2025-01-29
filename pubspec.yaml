@@ -17,6 +17,7 @@ dependencies:
   dotted_border: ^2.1.0
   image_picker: ^1.1.2
   iconsax: ^0.0.8
+  searchable_listview: ^2.16.0
   
 flutter_native_splash:
   image: assets/1.png

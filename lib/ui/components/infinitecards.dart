@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:offertree/ui/screens/ads/private/ad_details.dart';
 
-Widget buildInfiniteCard(Map<String, dynamic> item) {
-  return Container(
+Widget buildInfiniteCard(BuildContext context,Map<String, dynamic> item) {
+  return GestureDetector(
+    onTap: (){
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdDetails(),
+        ),
+      );
+    },
+    child: Container(
     margin: const EdgeInsets.only(bottom: 16),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(16),
@@ -15,7 +25,8 @@ Widget buildInfiniteCard(Map<String, dynamic> item) {
         ),
       ],
     ),
-    child: Row(
+
+      child: Row(
       children: [
         ClipRRect(
           borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
@@ -82,5 +93,6 @@ Widget buildInfiniteCard(Map<String, dynamic> item) {
         ),
       ],
     ),
+  ),
   );
 }

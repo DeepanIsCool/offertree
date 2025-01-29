@@ -27,8 +27,8 @@ class SplashScreen extends StatelessWidget {
             children: [
               // App logo
               Container(
-                width: 150,
-                height: 150,
+                width: 200,
+                height: 200,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/svg/Logo/splashlogo.png'),
@@ -36,22 +36,13 @@ class SplashScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
               // App name
-              Text(
-                "offerTree",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.white,
-                ),
-              ),
               const SizedBox(height: 10),
               // Subtitle
               Text(
-                "Buy and Sell Anything",
+                "Discover. Sell. Connect.",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   fontStyle: FontStyle.normal,
                   color: Colors.white70,
                 ),

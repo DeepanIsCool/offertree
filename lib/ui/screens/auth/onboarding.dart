@@ -18,18 +18,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final List<Map<String, String>> slidersList = [
       {
         'svg': "assets/svg/Illustrators/onbo_a.png",
-        'title': "Welcome to Our App",
-        'description': "Discover amazing features and possibilities with our application",
+        'title': "Post Ads Instantly",
+        'description': "Easily create and publish ads in just a few clicks, reaching your audience quickly and efficiently",
       },
       {
         'svg': "assets/svg/Illustrators/onbo_b.png",
-        'title': "Easy to Use",
-        'description': "Our app is designed with simplicity in mind for the best user experience",
+        'title': "Find What You Need",
+        'description': "Discover products, services, or opportunities tailored to your needs with ease.",
       },
       {
         'svg': "assets/svg/Illustrators/onbo_c.png",
-        'title': "Get Started Now",
-        'description': "Join our community and start exploring all the features",
+        'title': "Chat Securely",
+        'description': "Communicate with confidence using end-to-end encryption to protect your conversations.",
       },
     ];
 
@@ -132,6 +132,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       setState(() {
                         currentPageIndex++;
                       });
+                    } else {
+                      setState(() {
+                        currentPageIndex--;
+                      });
                     }
                   },
                   child: Container(
@@ -149,8 +153,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.arrow_forward,
+                    child: Icon(
+                      currentPageIndex < slidersList.length - 1 ? Icons.arrow_forward : Icons.arrow_back,
                       color: Colors.white,
                     ),
                   ),

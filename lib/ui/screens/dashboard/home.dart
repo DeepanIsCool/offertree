@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:offertree/ui/screens/ads/ad_details.dart';
+import 'package:offertree/ui/screens/ads/private/ad_details.dart';
 import 'package:offertree/ui/screens/category/categorylist.dart';
 import 'package:offertree/ui/screens/category/subcategory.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
@@ -242,7 +242,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 const SizedBox(height: 24),
 
-                // New Infinite Scroll Section
                 _buildSectionHeader('More Items'),
                 const SizedBox(height: 16),
                 ListView.builder(
@@ -258,7 +257,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       );
                     }
-                    return buildInfiniteCard(infiniteItems[index]);
+                    return buildInfiniteCard(context, infiniteItems[index]);
                   },
                 ),
               ],
@@ -409,7 +408,16 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildWatchCard(String title, double price) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AdDetails(),
+          ),
+        );
+      },
+    child: Container(
       width: 180,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
@@ -484,6 +492,7 @@ class _DashboardState extends State<Dashboard> {
           ),
         ],
       ),
+    ),
     );
   }
 

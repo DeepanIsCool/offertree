@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
 
 class Profile extends StatefulWidget {
@@ -96,7 +97,7 @@ class _ProfileState extends State<Profile> {
                           _nickname,
                           style: const TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.normal,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -119,25 +120,31 @@ class _ProfileState extends State<Profile> {
 
                 _buildListTile(
                   'My Ads',
+                  leadingIcon: const Icon(Iconsax.discount_circle, color: Color(0xFF576bd6)),
                   showModify: true,
                 ),
                 _buildListTile(
                   'Subscription',
+                  leadingIcon: const Icon(Iconsax.money, color: Color(0xFF576bd6)),
                   showModify: true,
                 ),
                 const SizedBox(height: 32),
 
                 _buildListTile(
                   'Favourties',
+                  leadingIcon: const Icon(Iconsax.heart, color: Color(0xFF576bd6)),
                 ),
                 _buildListTile(
                   'Terms & Conditions',
+                  leadingIcon: const Icon(Iconsax.note, color: Color(0xFF576bd6)),
                 ),
                 _buildListTile(
                   'Privacy Policy',
+                  leadingIcon: const Icon(Iconsax.lock, color: Color(0xFF576bd6)),
                 ),
                 _buildListTile(
                   'Delete Account',
+                  leadingIcon: const Icon(Iconsax.profile_delete, color: Color(0xFF576bd6)),
                 ),
               ],
             ),

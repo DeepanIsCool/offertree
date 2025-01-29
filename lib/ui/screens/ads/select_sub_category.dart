@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:offertree/ui/screens/ads/ad_create.dart';
+import 'package:offertree/ui/screens/ads/private/ad_create.dart';
 
 class SelectSubCategory extends StatelessWidget {
   final List<ApplianceItem> appliances = [

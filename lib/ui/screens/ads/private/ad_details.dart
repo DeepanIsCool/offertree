@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/components/slider.dart';
-
 class AdDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -9,10 +9,11 @@ class AdDetails extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text("\$750.00"),
+        title: Text('Sample Ad Name',
+          style: Theme.of(context).textTheme.titleMedium,),
         actions: [
           IconButton(
-            icon: Icon(Icons.share),
+            icon: Icon(Iconsax.export_1),
             onPressed: () {},
           ),
         ],
@@ -23,14 +24,14 @@ class AdDetails extends StatelessWidget {
           children: [
             // Top section
             Container(
-              color: Colors.teal,
+              color: Color(0xFF576bd6),
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: Colors.white),
+                      Icon(Iconsax.location, color: Colors.white),
                       SizedBox(width: 8),
                       Text(
                         "Bhuj, Gujarat, India",
@@ -68,14 +69,14 @@ class AdDetails extends StatelessWidget {
                   childAspectRatio: 3,
                 ),
                 children: [
-                  buildFeatureTile(Icons.bed, "3 Bedrooms"),
-                  buildFeatureTile(Icons.bathtub, "2 Bathrooms"),
-                  buildFeatureTile(Icons.aspect_ratio, "5000 Carpet Area"),
-                  buildFeatureTile(Icons.home_work, "75000 Built-Up Area"),
-                  buildFeatureTile(Icons.event_seat, "Unfurnished"),
-                  buildFeatureTile(Icons.balcony, "Balconies: Yes"),
-                  buildFeatureTile(Icons.local_parking, "Parking: Yes"),
-                  buildFeatureTile(Icons.check_circle, "Ready to Move"),
+                  buildFeatureTile(Iconsax.tick_circle, "3 Bedrooms"),
+                  buildFeatureTile(Iconsax.tick_circle, "2 Bathrooms"),
+                  buildFeatureTile(Iconsax.tick_circle, "5000 Carpet Area"),
+                  buildFeatureTile(Iconsax.tick_circle, "75000 Built-Up "),
+                  buildFeatureTile(Iconsax.tick_circle, "Unfurnished"),
+                  buildFeatureTile(Iconsax.tick_circle, "Balconies"),
+                  buildFeatureTile(Iconsax.tick_circle, "Parking"),
+                  buildFeatureTile(Iconsax.tick_circle, "Ready to Move"),
                 ],
               ),
             ),
@@ -87,7 +88,7 @@ class AdDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "About this item",
+                    "Price",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.normal,
@@ -95,7 +96,7 @@ class AdDetails extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "Villa on rent",
+                    "₹ 750.00 ",
                     style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                 ],
@@ -105,8 +106,8 @@ class AdDetails extends StatelessWidget {
             // Contact Section
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.teal,
-                child: Icon(Icons.person, color: Colors.white),
+                backgroundColor: Color(0xFF576bd6),
+                child: Icon(Iconsax.user, color: Colors.white),
               ),
               title: Text("Designer"),
               subtitle: Text("demo@gmail.com"),
@@ -114,18 +115,17 @@ class AdDetails extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.mark_chat_unread, color: Colors.teal),
+                    icon: Icon(Iconsax.message, color: Color(0xFF576bd6)),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Icon(Icons.phone_android_rounded, color: Colors.teal),
+                    icon: Icon(Iconsax.call, color: Color(0xFF576bd6)),
                     onPressed: () {},
                   ),
                 ],
               ),
             ),
             SizedBox(height: 16),
-            // Location Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -156,7 +156,7 @@ class AdDetails extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
+                  backgroundColor: Color(0xFF576bd6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -181,7 +181,7 @@ class AdDetails extends StatelessWidget {
   Widget buildFeatureTile(IconData icon, String label) {
     return Row(
       children: [
-        Icon(icon, color: Colors.teal),
+        Icon(icon, color: Color(0xFF576bd6)),
         SizedBox(width: 8),
         Expanded(
           child: Text(

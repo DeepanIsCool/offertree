@@ -22,32 +22,32 @@ class ListAds extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: ListView(
             children: [
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 29.99,
                 'title': 'Sample Item',
                 'location': 'New York',
               }),
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 49.99,
                 'title': 'Vintage Chair',
                 'location': 'San Francisco',
               }),
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 19.99,
                 'title': 'Stylish Lamp',
                 'location': 'Los Angeles',
               }),
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 99.99,
                 'title': 'Mountain Bike',
                 'location': 'Denver',
               }),
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 14.99,
                 'title': 'Classic Books',
                 'location': 'Boston',
               }),
-              buildInfiniteCard({
+              buildInfiniteCard(context,{
                 'price': 299.99,
                 'title': 'Gaming Laptop',
                 'location': 'Seattle',
