@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
+import 'package:offertree/ui/screens/chats/chat_screens.dart';
 
 class User {
   final String id;
@@ -139,7 +140,6 @@ class _ChatsState extends State<Chats> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,7 +177,10 @@ class _ChatsState extends State<Chats> {
                       horizontal: 16, vertical: 8),
                   leading: GestureDetector(
                     onTap: () {
-
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ChatScreen(name: 'Alex Johnson', avatar: '', userid: ''))
+                      );
                     },
                     child: Stack(
                       children: [

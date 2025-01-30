@@ -18,6 +18,7 @@ dependencies:
   image_picker: ^1.1.2
   iconsax: ^0.0.8
   searchable_listview: ^2.16.0
+  sidebarx: ^0.17.1
   
 flutter_native_splash:
   image: assets/1.png
@@ -46,3 +47,8 @@ flutter:
     - assets/svg/bottomnav/home_active.png
     - assets/svg/bottomnav/myads_active.png
     - assets/svg/bottomnav/profile_active.png
+    - assets/happy.png
+    - assets/furniture.png
+    - assets/house.png
+    - assets/brand.png
+    - assets/car.png

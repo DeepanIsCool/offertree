@@ -41,7 +41,6 @@ class _DashboardState extends State<Dashboard> {
       isLoading = true;
     });
 
-    // Simulate API call with delay
     await Future.delayed(const Duration(seconds: 1));
 
     final newItems = List.generate(1, (index) => {
@@ -77,29 +76,34 @@ class _DashboardState extends State<Dashboard> {
               children: [
                 Row(
                   children: [
-                    Icon(Iconsax.location,
-                      color: Color(0xFF576bd6),
-                      size: 24,
-                    ),
+                    // Icon(Iconsax.location,
+                    //   color: Color(0xFF576bd6),
+                    //   size: 24,
+                    // ),
                     const SizedBox(width: 8),
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Location',
+                          'OfferTree',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 12,
+                            fontSize: 20,
                           ),
                         ),
-                        Text(
-                          'Bhuj, Gujarat, India',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
+                        // Text(
+                        //   'Bhuj, Gujarat, India',
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 12,
+                        //   ),
+                        // ),
                       ],
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Iconsax.user_octagon,
+                      size: 32,
                     ),
                   ],
                 ),
@@ -117,7 +121,7 @@ class _DashboardState extends State<Dashboard> {
                   child: Row(
                     children: [
                       _buildCategoryItem(
-                        icon: Iconsax.home,
+                        image: Image.asset('assets/house.png'),
                         label: 'Home',
                         onTap: () {
                           Navigator.push(
@@ -129,7 +133,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Iconsax.coffee,
+                        image: Image.asset('assets/furniture.png'),
                         label: 'Furnitures',
                         onTap: () {
                           Navigator.push(
@@ -141,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Iconsax.cloud,
+                        image: Image.asset('assets/brand.png'),
                         label: 'Clothing',
                         onTap: () {
                           Navigator.push(
@@ -153,7 +157,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Iconsax.pet,
+                        image: Image.asset('assets/happy.png'),
                         label: 'Pets',
                         onTap: () {
                           Navigator.push(
@@ -165,7 +169,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Iconsax.car,
+                        image: Image.asset('assets/car.png'),
                         label: 'Vehicles',
                         onTap: () {
                           Navigator.push(
@@ -177,19 +181,7 @@ class _DashboardState extends State<Dashboard> {
                         },
                       ),
                       _buildCategoryItem(
-                        icon: Iconsax.monitor,
-                        label: 'Electronic',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Subcategory(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildCategoryItem(
-                        icon: Iconsax.more_square,
+                        image: Image.asset('assets/svg/Logo/splashlogo.png'),
                         label: 'All',
                         onTap: () {
                           Navigator.push(
@@ -369,7 +361,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildCategoryItem({
-    required IconData icon,
+    required Image image,
     required String label,
     required VoidCallback onTap,
   })
@@ -387,11 +379,8 @@ class _DashboardState extends State<Dashboard> {
                 color: Color(0xFF576bd6),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 30,
-              ),
+              child:
+                image,
             ),
             const SizedBox(height: 8),
             Text(

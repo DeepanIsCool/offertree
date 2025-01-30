@@ -17,6 +17,7 @@ class _AddItemDetailsState extends State<AddItemDetails> {
   @override
   void initState() {
     super.initState();
+
   }
 
   void _showadtitleBottomSheet() {
