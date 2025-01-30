@@ -6,6 +6,7 @@ import 'package:offertree/ui/screens/category/subcategory.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
 import 'package:offertree/ui/components/slider.dart';
 import 'package:offertree/ui/components/infinitecards.dart';
+import 'package:offertree/ui/screens/search/search_bar.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -103,11 +104,12 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 const SizedBox(height: 24),
+                HomeSearchField(),
                 SliderWidget(imageUrls:
                 [
-                  'https://picsum.photos/id/237/200/300',
-                  'https://picsum.photos/seed/picsum/200/300',
-                  'https://picsum.photos/200/300?grayscale',
+                  'assets/svg/Illustrators/onbo_a.png',
+                  'assets/svg/Illustrators/onbo_b.png',
+                  'assets/svg/Illustrators/onbo_c.png',
                 ]),
                 const SizedBox(height: 24),
                 SingleChildScrollView(
