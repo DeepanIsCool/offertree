@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:offertree/ui/screens/auth/login/login.dart';
+import 'package:offertree/ui/screens/auth/login/email_login.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -176,9 +176,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: MaterialButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const EmailLogin()),
                 );
               },
               height: 56,
