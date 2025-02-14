@@ -16,8 +16,40 @@ class ApiResponse {
   static location(int i, String location) {}
 }
 
+class Ad {
+  final String title;
+  final String description;
+  final double price;
+  final String location;
+  final int userId;
+  final int categoryId;
+  final int subcategoryId;
+
+  Ad({
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.location,
+    required this.userId,
+    required this.categoryId,
+    required this.subcategoryId,
+  });
+
+  factory Ad.fromJson(Map<String, dynamic> json) {
+    return Ad(
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      location: json['location'] ?? '',
+      userId: json['userId'] ?? 0,
+      categoryId: json['categoryId'] ?? 0,
+      subcategoryId: json['subcategoryId'] ?? 0,
+    );
+  }
+}
+
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.189:3000';
+  static const String baseUrl = 'https://offertree-backend.vercel.app';
   static String? _authToken;
   static int? _id;
 
@@ -160,6 +192,44 @@ class ApiService {
           message: responseData['message'] ??
               responseData['error'] ??
               'Category fetch failed',
+        );
+      }
+    } catch (e) {
+      return ApiResponse(
+        success: false,
+        message: 'Connection error: ${e.toString()}',
+      );
+    }
+  }
+
+  //Ads Api
+  Future<ApiResponse> ads() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/ads'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        List<Ad> ads = (responseData['data'] as List)
+            .map((ad) => Ad.fromJson(ad))
+            .toList();
+
+        return ApiResponse(
+          success: true,
+          message: responseData['message'] ?? 'Ads fetched successfully',
+          data: {'ads': ads},
+        );
+      } else {
+        return ApiResponse(
+          success: false,
+          message: responseData['message'] ??
+              responseData['error'] ??
+              'Ads fetch failed',
         );
       }
     } catch (e) {

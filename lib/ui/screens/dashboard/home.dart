@@ -8,6 +8,8 @@ import 'package:offertree/ui/components/slider.dart';
 import 'package:offertree/ui/components/infinitecards.dart';
 import 'package:offertree/ui/screens/search/search_bar.dart';
 import 'package:shimmer/shimmer.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -20,42 +22,21 @@ class _DashboardState extends State<Dashboard> {
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> infiniteItems = [];
   bool isLoading = false;
+  bool hasMore = true;
   int currentPage = 1;
 
   @override
   void initState() {
     super.initState();
-    _loadMoreData();
+    _fetchInfiniteItems();
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
-        _loadMoreData();
+              _scrollController.position.maxScrollExtent - 200 &&
+          !isLoading &&
+          hasMore) {
+        _fetchInfiniteItems();
       }
-    });
-  }
-
-  Future<void> _loadMoreData() async {
-    if (isLoading) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    final newItems = List.generate(
-        1,
-        (index) => {
-              'price': 750.00 + (index * 100),
-              'title': 'Item ${infiniteItems.length + index + 1}',
-              'location': 'Bhuj, Gujarat, India'
-            });
-
-    setState(() {
-      infiniteItems.addAll(newItems);
-      currentPage++;
-      isLoading = false;
     });
   }
 
@@ -71,6 +52,35 @@ class _DashboardState extends State<Dashboard> {
       'destination': CategoryList(),
     },
   ];
+
+  Future<void> _fetchInfiniteItems() async {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await http.get(
+      Uri.parse(
+          'https://offertree-backend.vercel.app/api/ads?page=$currentPage'),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> newItems = json.decode(response.body);
+      setState(() {
+        infiniteItems
+            .addAll(newItems.map((item) => item as Map<String, dynamic>));
+        isLoading = false;
+        currentPage++;
+        hasMore = newItems.isNotEmpty;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      throw Exception('Failed to load items');
+    }
+  }
 
   @override
   void dispose() {
@@ -92,10 +102,6 @@ class _DashboardState extends State<Dashboard> {
               children: [
                 Row(
                   children: [
-                    // Icon(Iconsax.location,
-                    //   color: Color(0xFF576bd6),
-                    //   size: 24,
-                    // ),
                     const SizedBox(width: 8),
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,13 +113,6 @@ class _DashboardState extends State<Dashboard> {
                             fontSize: 20,
                           ),
                         ),
-                        // Text(
-                        //   'Bhuj, Gujarat, India',
-                        //   style: TextStyle(
-                        //     fontWeight: FontWeight.bold,
-                        //     fontSize: 12,
-                        //   ),
-                        // ),
                       ],
                     ),
                     const Spacer(),
@@ -155,8 +154,6 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Properties Section
                 _buildSectionHeader('Popular Properties'),
                 const SizedBox(height: 14),
                 SingleChildScrollView(
@@ -164,7 +161,7 @@ class _DashboardState extends State<Dashboard> {
                   child: Row(
                     children: isLoading
                         ? List.generate(
-                            3, (index) => _buildPropertyCardShimmer())
+                            9, (index) => _buildPropertyCardShimmer())
                         : [
                             _buildPropertyCard(),
                             _buildPropertyCard(),
@@ -173,24 +170,6 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Electronics Section
-                _buildSectionHeader('Popular in Electronics'),
-                const SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: isLoading
-                        ? List.generate(3, (index) => _buildWatchCardShimmer())
-                        : [
-                            _buildWatchCard('Rolex submariner', 1249.00),
-                            _buildWatchCard('Omega spee', 1900.00),
-                            _buildWatchCard('Tag heuer', 2599.00),
-                          ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-//Infinite Cards
                 _buildSectionHeader('More Items'),
                 const SizedBox(height: 16),
                 ListView.builder(
@@ -215,101 +194,127 @@ class _DashboardState extends State<Dashboard> {
 
 //Property Card
   Widget _buildPropertyCard() {
-    bool isLiked = false;
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdDetails(),
-          ),
-        );
-      },
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.only(right: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
+    return FutureBuilder<List<dynamic>>(
+      future: fetchAdsFromApi(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildPropertyCardShimmer();
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No ads available'));
+        }
+
+        // Using the first ad from the fetched list.
+        var ad = snapshot.data!.first;
+        bool isLiked = false;
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdDetails(),
+              ),
+            );
+          },
+          child: Container(
+            width: 200,
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.asset(
-                    'assets/svg/Illustrators/onbo_c.png',
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isLiked = !isLiked;
-                      });
-                    },
-                    child: Icon(
-                      Iconsax.heart5,
-                      color: Colors.redAccent,
+                Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(16)),
+                      child: Image.asset(
+                        'assets/svg/Illustrators/onbo_c.png',
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isLiked = !isLiked;
+                          });
+                        },
+                        child: Icon(
+                          Iconsax.heart5,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '\$${ad["price"]}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF576bd6),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        ad["title"],
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.location,
+                            size: 16,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            ad["location"],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '\$750.00',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF576bd6),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Villa',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.location,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Bhuj,Gujarat,India',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  Future<List<dynamic>> fetchAdsFromApi() async {
+    final response = await http.get(
+      Uri.parse('https://offertree-backend.vercel.app/api/ads'),
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load ads');
+    }
   }
 
 //Property Shimmer
@@ -440,161 +445,6 @@ class _DashboardState extends State<Dashboard> {
               width: 50,
               height: 10,
               color: Colors.white,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-//Watch Card
-  Widget _buildWatchCard(String title, double price) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AdDetails(),
-          ),
-        );
-      },
-      child: Container(
-        width: 180,
-        margin: const EdgeInsets.only(right: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.asset(
-                    'assets/svg/Illustrators/onbo_b.png',
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Icon(
-                    Iconsax.heart5,
-                    color: Colors.redAccent,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '\$${price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF576bd6),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.location,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Bhuj,Gujarat,India',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-//Watch Card Shimmer
-  Widget _buildWatchCardShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: 180,
-        margin: const EdgeInsets.only(right: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 180,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 14,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: 120,
-                    height: 14,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        width: 14,
-                        height: 14,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Container(
-                        width: 80,
-                        height: 12,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ),
           ],
         ),

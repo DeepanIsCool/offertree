@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ChatScreen extends StatefulWidget {
   final String name;
@@ -20,10 +25,125 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, String>> messages = [];
   final TextEditingController _messageController = TextEditingController();
+  late int senderid;
+  IO.Socket? socket;
+  bool isConnecting = true;
+  String? connectionError;
+
+  Future<void> _initializeChat() async {
+    try {
+      await _fetchSenderId();
+      if (senderid == null) {
+        throw Exception('Failed to fetch sender ID');
+      }
+
+      _initializeSocket();
+    } catch (e) {
+      setState(() {
+        connectionError = e.toString();
+        isConnecting = false;
+      });
+      print('Initialization error: $e');
+    }
+  }
+
+  Future<void> _fetchSenderId() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://offertree-backend.vercel.app/api/profile'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          senderid = data['id'];
+        });
+        print('Sender ID: $senderid');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('id', senderid!);
+      } else {
+        throw Exception('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('An error occurred while fetching sender ID: $e');
+    }
+  }
+
+  void _initializeSocket() {
+    // Initialize Socket.IO client
+    socket = IO.io('https://offertree-backend.onrender.com', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+
+    // Set up socket event handlers
+    socket!.on('connect', (_) {
+      print('Connected to socket server');
+      setState(() {
+        isConnecting = false;
+        connectionError = null;
+      });
+    });
+
+    socket!.on('connect_error', (data) {
+      print('Failed to connect to server: $data');
+      setState(() {
+        connectionError = 'Connection failed: $data';
+        isConnecting = false;
+      });
+    });
+
+    socket!.on('disconnect', (_) {
+      print('Disconnected from socket server');
+      setState(() {
+        isConnecting = true;
+      });
+    });
+
+    socket!.on('message', (data) {
+      print('Message received: $data');
+
+      if (data is List) {
+        // If multiple messages are received
+        for (var message in data) {
+          setState(() {
+            messages.add({
+              "text": message['text'],
+              "type": message['msgByUserId'] == senderid ? "sent" : "received",
+            });
+          });
+        }
+      } else if (data is Map<String, dynamic>) {
+        // If a single message is received
+        setState(() {
+          messages.add({
+            "text": data['text'],
+            "type": data['msgByUserId'] == senderid ? "sent" : "received",
+          });
+        });
+      } else {
+        print('Unexpected data format: $data');
+      }
+    });
+
+
+    // Connect to the socket server
+    socket!.connect();
+  }
 
   void _sendMessage() {
-    if (_messageController.text.trim().isNotEmpty) {
+    if (_messageController.text.trim().isNotEmpty && socket != null) {
       final messageText = _messageController.text.trim();
+
+      socket!.emit('new message', {
+        'sender': senderid,
+        'receiver': widget.userid,
+        'text': messageText,
+      });
+      print('Message sent: $messageText');
 
       setState(() {
         messages.add({"text": messageText, "type": "sent"});
@@ -32,6 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messageController.clear();
     }
   }
+
 
   @override
   void dispose() {
@@ -131,3 +252,4 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+

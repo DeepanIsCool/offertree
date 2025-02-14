@@ -69,14 +69,7 @@ class AdDetails extends StatelessWidget {
                   childAspectRatio: 3,
                 ),
                 children: [
-                  buildFeatureTile(Iconsax.tick_circle, "3 Bedrooms"),
-                  buildFeatureTile(Iconsax.tick_circle, "2 Bathrooms"),
-                  buildFeatureTile(Iconsax.tick_circle, "5000 Carpet Area"),
-                  buildFeatureTile(Iconsax.tick_circle, "75000 Built-Up "),
-                  buildFeatureTile(Iconsax.tick_circle, "Unfurnished"),
-                  buildFeatureTile(Iconsax.tick_circle, "Balconies"),
-                  buildFeatureTile(Iconsax.tick_circle, "Parking"),
-                  buildFeatureTile(Iconsax.tick_circle, "Ready to Move"),
+                  buildFeatureTile("lorem ipsum"),
                 ],
               ),
             ),
@@ -178,11 +171,9 @@ class AdDetails extends StatelessWidget {
     );
   }
 
-  Widget buildFeatureTile(IconData icon, String label) {
+  Widget buildFeatureTile(String label) {
     return Row(
       children: [
-        Icon(icon, color: Color(0xFF576bd6)),
-        SizedBox(width: 8),
         Expanded(
           child: Text(
             label,

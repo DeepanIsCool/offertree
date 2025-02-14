@@ -66,10 +66,11 @@ class _SearchBarAppState extends State<SearchScreen> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredItems = _allItems.where((item) {
-        final matchesQuery = item['title'].toString().toLowerCase().contains(query) ||
-            item['location'].toString().toLowerCase().contains(query);
-        final matchesLocation = _selectedLocation == null ||
-            item['location'] == _selectedLocation;
+        final matchesQuery =
+            item['title'].toString().toLowerCase().contains(query) ||
+                item['location'].toString().toLowerCase().contains(query);
+        final matchesLocation =
+            _selectedLocation == null || item['location'] == _selectedLocation;
         final matchesPrice =
             item['price'] >= _minPrice && item['price'] <= _maxPrice;
 
@@ -77,7 +78,6 @@ class _SearchBarAppState extends State<SearchScreen> {
       }).toList();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
