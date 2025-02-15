@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:offertree/ui/screens/ads/select_sub_category.dart';
+import 'package:offertree/ui/screens/ads/private/select_sub_category.dart';
 
 class SelectCategory extends StatelessWidget {
   final List<Map<String, String>> categories = [

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:offertree/ui/screens/ads/private/ad_details.dart';
+import 'package:offertree/ui/screens/ads/ad_details.dart';
 import 'package:offertree/ui/screens/category/subcategory.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
 import 'package:offertree/ui/components/slider.dart';

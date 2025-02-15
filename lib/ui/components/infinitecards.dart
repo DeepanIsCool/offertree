@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:offertree/ui/screens/ads/private/ad_details.dart';
+import 'package:offertree/ui/screens/ads/ad_details.dart';
 
 Widget buildInfiniteCard(BuildContext context, Map<String, dynamic> item) {
   return GestureDetector(

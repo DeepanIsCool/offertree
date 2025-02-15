@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:offertree/ui/screens/ads/private/ad_create.dart';
 import 'package:offertree/ui/screens/chats/chats.dart';
 import 'package:offertree/ui/screens/dashboard/home.dart';
 import 'package:offertree/ui/screens/profile/profile.dart';
-import 'package:offertree/ui/screens/ads/select_category.dart';
 import 'package:offertree/ui/screens/ads/list_ads.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -19,7 +19,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   final List<Widget> _pages = [
     Dashboard(),
     Chats(),
-    SelectCategory(),
+    AddItemDetails(),
     ListAds(),
     Profile(),
   ];
@@ -50,18 +50,23 @@ class _BottomNavigationState extends State<BottomNavigation> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(Iconsax.home, "Home", _currentIndex == 0, () => _onItemTapped(0)),
-            _buildNavItem(Iconsax.message, "Chats", _currentIndex == 1, () => _onItemTapped(1)),
+            _buildNavItem(Iconsax.home, "Home", _currentIndex == 0,
+                () => _onItemTapped(0)),
+            _buildNavItem(Iconsax.message, "Chats", _currentIndex == 1,
+                () => _onItemTapped(1)),
             _buildAddButton(),
-            _buildNavItem(Iconsax.discount_circle, "Ads", _currentIndex == 3, () => _onItemTapped(3)),
-            _buildNavItem(Iconsax.user, "Profile", _currentIndex == 4, () => _onItemTapped(4)),
+            _buildNavItem(Iconsax.discount_circle, "Ads", _currentIndex == 3,
+                () => _onItemTapped(3)),
+            _buildNavItem(Iconsax.user, "Profile", _currentIndex == 4,
+                () => _onItemTapped(4)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isSelected, VoidCallback onTap) {
+  Widget _buildNavItem(
+      IconData icon, String label, bool isSelected, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Column(

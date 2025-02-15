@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:offertree/ui/screens/dashboard/home.dart';
 
 class AddItemDetails extends StatefulWidget {
   const AddItemDetails({super.key});
@@ -13,16 +16,119 @@ class _AddItemDetailsState extends State<AddItemDetails> {
   final List<XFile?> selectedImages = [];
   final int maxPhotos = 6;
   String adtitle = '';
-  String adslug = '';
-  @override
-  void initState() {
-    super.initState();
+  int adprice = 0;
+  String addescription = '';
+  bool isLoading = false;
 
+  String selectedCategory = 'Select Category';
+  int selectedCategoryValue = 0;
+  String selectedCondition = 'Select Condition';
+  int selectedConditionValue = 0;
+  String selectedSubcategory = 'Select Subcategory';
+  int selectedSubcategoryValue = 0;
+
+  void _showDropdownBottomSheet(
+      String title, List<String> options, Function(String) onSelect) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+              Column(
+                children: options.map((option) {
+                  return ListTile(
+                    title: Text(option),
+                    onTap: () {
+                      onSelect(option);
+                      Navigator.pop(context);
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  void _showadtitleBottomSheet() {
+  void _showDropdownBottomSheetWithInt(
+      String title, Map<String, int> options, Function(String, int) onSelect) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+              Column(
+                children: options.entries.map((entry) {
+                  return ListTile(
+                    title: Text(entry.key),
+                    onTap: () {
+                      onSelect(entry.key, entry.value);
+                      Navigator.pop(context);
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditableBottomSheet(
+      String title, String initialValue, Function(String) onConfirm) {
     final TextEditingController controller =
-    TextEditingController(text: adtitle);
+        TextEditingController(text: initialValue);
 
     showModalBottomSheet(
       context: context,
@@ -47,9 +153,9 @@ class _AddItemDetailsState extends State<AddItemDetails> {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: const Text(
-                      'Ad Title',
-                      style: TextStyle(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.normal,
                       ),
@@ -100,14 +206,12 @@ class _AddItemDetailsState extends State<AddItemDetails> {
                         Expanded(
                           child: TextButton(
                             onPressed: () {
-                              setState(() {
-                                adtitle = controller.text;
-                              });
+                              onConfirm(controller.text);
                               Navigator.pop(context);
                             },
                             style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 12),
-                              backgroundColor: Colors.cyan,
+                              backgroundColor: Color(0xFF576bd6),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -130,9 +234,7 @@ class _AddItemDetailsState extends State<AddItemDetails> {
           },
         );
       },
-    ).then((_) {
-      setState(() {});
-    });
+    );
   }
 
   Widget _buildPhotoGrid() {
@@ -195,7 +297,7 @@ class _AddItemDetailsState extends State<AddItemDetails> {
             if (selectedImages.length < maxPhotos) {
               final ImagePicker picker = ImagePicker();
               final XFile? image =
-              await picker.pickImage(source: ImageSource.gallery);
+                  await picker.pickImage(source: ImageSource.gallery);
 
               if (image != null) {
                 setState(() {
@@ -205,7 +307,8 @@ class _AddItemDetailsState extends State<AddItemDetails> {
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('Maximum number of photos selected')),
+                  content: Text('Maximum number of photos selected'),
+                ),
               );
             }
           },
@@ -214,20 +317,15 @@ class _AddItemDetailsState extends State<AddItemDetails> {
     }
   }
 
-  Widget _buildSectionContainer(
-      {required String title, required List<Widget> children}) {
+  Widget _buildSectionContainer({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,92 +336,88 @@ class _AddItemDetailsState extends State<AddItemDetails> {
     );
   }
 
-  Widget _buildInfoItem(String title, String action, {bool isButton = false}) {
+  Widget _buildInfoItem(String title, String value, VoidCallback? onTap) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         title: Text(title),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (isButton)
-              Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  action,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              )
-            else if (title == 'Ad Title')
-              Text(
-                adtitle.isEmpty ? action : adtitle,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
-              )
-              else
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      action,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                    ),
-                    const Icon(Icons.chevron_right, color: Colors.grey),
-                  ],
-                ),
+            Text(
+              value.isEmpty || value.startsWith('Select')
+                  ? 'Add $title'
+                  : value,
+              style: TextStyle(
+                color: value.isEmpty || value.startsWith('Select')
+                    ? Colors.grey[600]
+                    : Colors.black,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
-        onTap: title == 'Ad Title'
-            ? _showadtitleBottomSheet
-            : (title == 'Slug' ? _showadtitleBottomSheet : null),
+        onTap: onTap,
       ),
     );
   }
 
-  Widget _buildEditableSection(String title, String subtitle) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 16)),
-              Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Text(
-                  'Edit',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
-            ],
+  Future<void> _postAd() async {
+    setState(() {
+      isLoading = true; // Start loading
+    });
+    const String apiUrl = 'https://offertree-backend.vercel.app/api/ads';
+
+    final Map<String, dynamic> requestBody = {
+      "title": adtitle,
+      "description": addescription,
+      "price": adprice,
+      "categoryId": selectedCategoryValue,
+      "subcategoryId": selectedSubcategoryValue,
+      "userId": 3,
+      "condition": selectedCondition,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ad posted successfully!')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Dashboard(),
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(color: Colors.grey[600], fontSize: 14),
-          ),
-        ],
-      ),
-    );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to post ad: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -331,9 +425,11 @@ class _AddItemDetailsState extends State<AddItemDetails> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
-        leading: BackButton(),
-        title: Text('Ad Details',
-          style: Theme.of(context).textTheme.titleMedium,),
+        leading: const BackButton(),
+        title: Text(
+          'Ad Details',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
@@ -344,22 +440,115 @@ class _AddItemDetailsState extends State<AddItemDetails> {
           _buildSectionContainer(
             title: 'Ad Title',
             children: [
-              _buildInfoItem('Ad Title', adtitle),
-            ],
-          ),
-          _buildSectionContainer(
-            title: 'Slug',
-            children: [
-              _buildInfoItem('Slug', adslug),
+              _buildInfoItem('Ad Title', adtitle, () {
+                _showEditableBottomSheet('Edit Ad Title', adtitle, (newValue) {
+                  setState(() {
+                    adtitle = newValue;
+                  });
+                });
+              }),
             ],
           ),
           _buildSectionContainer(
             title: 'Description',
             children: [
-              _buildInfoItem('Description', adtitle),
+              _buildInfoItem('Description', addescription, () {
+                _showEditableBottomSheet('Description', addescription,
+                    (newValue) {
+                  setState(() {
+                    addescription = newValue;
+                  });
+                });
+              }),
             ],
           ),
-          const SizedBox(height: 16),
+          _buildSectionContainer(
+            title: 'Price',
+            children: [
+              _buildInfoItem('Price', adprice.toString(), () {
+                _showEditableBottomSheet('Price', adprice.toString(),
+                    (newValue) {
+                  setState(() {
+                    adprice = int.tryParse(newValue) ?? adprice;
+                  });
+                });
+              }),
+            ],
+          ),
+          _buildInfoItem('Condition', selectedCondition, () {
+            _showDropdownBottomSheetWithInt(
+              'Select Condition',
+              {
+                'New': 1,
+                'Refurbished': 2,
+              },
+              (text, value) {
+                setState(() {
+                  selectedCondition = text;
+                  selectedConditionValue = value;
+                });
+              },
+            );
+          }),
+          _buildInfoItem('Category', selectedCategory, () {
+            _showDropdownBottomSheetWithInt(
+              'Select Category',
+              {
+                'Mobiles': 1,
+                'Laptop': 2,
+              },
+              (text, value) {
+                setState(() {
+                  selectedCategory = text;
+                  selectedCategoryValue = value;
+                });
+              },
+            );
+          }),
+          _buildInfoItem('Subcategory', selectedSubcategory, () {
+            _showDropdownBottomSheetWithInt(
+              'Select Subcategory',
+              {
+                'Iphone': 1,
+                'Windows Laptop': 2,
+              },
+              (text, value) {
+                setState(() {
+                  selectedSubcategory = text;
+                  selectedSubcategoryValue = value;
+                });
+              },
+            );
+          }),
+          Container(
+            margin: const EdgeInsets.all(16),
+            child: ElevatedButton(
+              onPressed: isLoading ? null : _postAd,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF576bd6),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : const Text(
+                      'Post Ad',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+            ),
+          ),
         ],
       ),
     );
