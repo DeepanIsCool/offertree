@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:offertree/ui/components/bottomnav.dart';
 import 'package:offertree/ui/components/infinitecards.dart';
 
@@ -9,21 +11,33 @@ class ListAds extends StatefulWidget {
 
 class _ListAdsState extends State<ListAds> {
   String _selectedStatus = 'All';
+  late Future<List<Map<String, dynamic>>> _futureAds;
 
-  final List<Map<String, dynamic>> _ads = [
-    {'price': 29.99, 'title': 'Sample Item', 'location': 'New York', 'status': 'Approved'},
-    {'price': 49.99, 'title': 'Vintage Chair', 'location': 'San Francisco', 'status': 'Pending'},
-    {'price': 19.99, 'title': 'Stylish Lamp', 'location': 'Los Angeles', 'status': 'Rejected'},
-    {'price': 99.99, 'title': 'Mountain Bike', 'location': 'Denver', 'status': 'Approved'},
-    {'price': 14.99, 'title': 'Classic Books', 'location': 'Boston', 'status': 'Pending'},
-    {'price': 299.99, 'title': 'Gaming Laptop', 'location': 'Seattle', 'status': 'Rejected'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _futureAds = fetchAds();
+  }
 
-  List<Map<String, dynamic>> get filteredAds {
-    if (_selectedStatus == 'All') {
-      return _ads;
+  Future<List<Map<String, dynamic>>> fetchAds() async {
+    final response = await http
+        .get(Uri.parse("https://offertree-backend.vercel.app/api/ads"));
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      // Ensure each item is a map
+      return data
+          .map<Map<String, dynamic>>((item) => Map<String, dynamic>.from(item))
+          .toList();
     } else {
-      return _ads.where((ad) => ad['status'] == _selectedStatus).toList();
+      throw Exception('Failed to load ads');
+    }
+  }
+
+  List<Map<String, dynamic>> filterAds(List<Map<String, dynamic>> ads) {
+    if (_selectedStatus == 'All') {
+      return ads;
+    } else {
+      return ads.where((ad) => ad['status'] == _selectedStatus).toList();
     }
   }
 
@@ -50,29 +64,44 @@ class _ListAdsState extends State<ListAds> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: ['All', 'Approved', 'Pending', 'Rejected']
+                  children: ['All', 'New', 'Pending', 'Rejected']
                       .map((status) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ChoiceChip(
-                      label: Text(status),
-                      selected: _selectedStatus == status,
-                      onSelected: (selected) {
-                        setState(() {
-                          _selectedStatus = selected ? status : 'All';
-                        });
-                      },
-                    ),
-                  ))
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ChoiceChip(
+                              label: Text(status),
+                              selected: _selectedStatus == status,
+                              onSelected: (selected) {
+                                setState(() {
+                                  _selectedStatus = selected ? status : 'All';
+                                });
+                              },
+                            ),
+                          ))
                       .toList(),
                 ),
               ),
               SizedBox(height: 16),
               // List of ads based on filter
               Expanded(
-                child: ListView(
-                  children: filteredAds
-                      .map((ad) => buildInfiniteCard(context, ad))
-                      .toList(),
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _futureAds,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Text('Error: ${snapshot.error.toString()}'));
+                    } else if (!snapshot.hasData) {
+                      return Center(child: Text('No ads found.'));
+                    }
+                    final filteredAds = filterAds(snapshot.data!);
+                    return ListView(
+                      children: filteredAds
+                          .map((ad) => buildInfiniteCard(context, ad))
+                          .toList(),
+                    );
+                  },
                 ),
               ),
             ],

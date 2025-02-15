@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/components/infinitecards.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -10,38 +12,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchBarAppState extends State<SearchScreen> {
-  final List<Map<String, dynamic>> _allItems = [
-    {
-      'price': 29.99,
-      'title': 'Sample Item 1',
-      'location': 'New York',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'price': 49.99,
-      'title': 'Sample Item 2',
-      'location': 'San Francisco',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'price': 19.99,
-      'title': 'Sample Item 3',
-      'location': 'Chicago',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'price': 39.99,
-      'title': 'Sample Item 4',
-      'location': 'Los Angeles',
-      'image': 'https://via.placeholder.com/150',
-    },
-    {
-      'price': 59.99,
-      'title': 'Sample Item 5',
-      'location': 'Miami',
-      'image': 'https://via.placeholder.com/150',
-    },
-  ];
+  List<Map<String, dynamic>> _allItems = []; // Initialize as empty
   List<Map<String, dynamic>> _filteredItems = [];
   final TextEditingController _searchController = TextEditingController();
 
@@ -52,7 +23,7 @@ class _SearchBarAppState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _filteredItems = List.from(_allItems);
+    _fetchItems(); // Fetch items when the widget initializes
     _searchController.addListener(_applyFilters);
   }
 
@@ -60,6 +31,29 @@ class _SearchBarAppState extends State<SearchScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  // Fetch items from the API
+  Future<void> _fetchItems() async {
+    try {
+      final response = await http
+          .get(Uri.parse("https://offertree-backend.vercel.app/api/ads"));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _allItems = data
+              .map<Map<String, dynamic>>(
+                  (item) => Map<String, dynamic>.from(item))
+              .toList();
+          _filteredItems = List.from(_allItems); // Initialize filtered items
+        });
+      } else {
+        throw Exception('Failed to load items');
+      }
+    } catch (e) {
+      print('Error fetching items: $e');
+      // Handle error (e.g., show a snackbar or error message)
+    }
   }
 
   void _applyFilters() {
@@ -111,10 +105,9 @@ class _SearchBarAppState extends State<SearchScreen> {
             // Filters
             Row(
               children: [
-                // Location Dropdown
+                // Location Dropdown (commented out for now)
                 // Expanded(
-                //   child:
-                //   DropdownButton<String>(
+                //   child: DropdownButton<String>(
                 //     isExpanded: true,
                 //     value: _selectedLocation,
                 //     hint: const Text("Select Location"),
@@ -151,7 +144,7 @@ class _SearchBarAppState extends State<SearchScreen> {
                         child: RangeSlider(
                           values: RangeValues(_minPrice, _maxPrice),
                           min: 0,
-                          max: 100,
+                          max: 2000,
                           divisions: 10,
                           labels: RangeLabels(
                             '\$${_minPrice.toInt()}',
@@ -173,14 +166,19 @@ class _SearchBarAppState extends State<SearchScreen> {
             ),
             const SizedBox(height: 10),
 
+            // List of filtered items
             Expanded(
-              child: ListView.builder(
-                itemCount: _filteredItems.length,
-                itemBuilder: (context, index) {
-                  final item = _filteredItems[index];
-                  return buildInfiniteCard(context, item);
-                },
-              ),
+              child: _allItems.isEmpty
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator()) // Show loading indicator
+                  : ListView.builder(
+                      itemCount: _filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _filteredItems[index];
+                        return buildInfiniteCard(context, item);
+                      },
+                    ),
             ),
           ],
         ),

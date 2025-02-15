@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:offertree/ui/screens/ads/select_sub_category.dart';
 
 class SelectCategory extends StatelessWidget {
@@ -15,7 +14,6 @@ class SelectCategory extends StatelessWidget {
     {"name": "Mobile Phones & Tablets", "icon": ""},
     {"name": "Consoles and Video Games", "icon": ""},
     {"name": "Jobs", "icon": ""},
-
   ];
 
   @override
@@ -24,8 +22,10 @@ class SelectCategory extends StatelessWidget {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         leading: BackButton(),
-        title: Text('Select Category for Ad Listing',
-          style: Theme.of(context).textTheme.titleMedium,),
+        title: Text(
+          'Select Category for Ad Listing',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
@@ -41,39 +41,37 @@ class SelectCategory extends StatelessWidget {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SelectSubCategory())
-              );
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SelectSubCategory()));
             },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  child: Image.asset('assets/svg/Logo/splashlogo.png'),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    categories[index]["name"]!,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    child: Image.asset('assets/svg/Logo/splashlogo.png'),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      categories[index]["name"]!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           );
         },
       ),

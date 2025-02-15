@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:offertree/ui/screens/ads/private/ad_details.dart';
-import 'package:offertree/ui/screens/category/categorylist.dart';
 import 'package:offertree/ui/screens/category/subcategory.dart';
 import 'package:offertree/ui/components/bottomnav.dart';
 import 'package:offertree/ui/components/slider.dart';
@@ -29,29 +28,38 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     _fetchInfiniteItems();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
-          !isLoading &&
-          hasMore) {
-        _fetchInfiniteItems();
-      }
-    });
+    _fetchCategories();
   }
 
-  final List<Map<String, dynamic>> categoryList = [
-    {
-      'image': Image.asset('assets/house.png'),
-      'label': 'House',
-      'destination': Subcategory(),
-    },
-    {
-      'image': Image.asset('assets/svg/Logo/splashlogo.png'),
-      'label': 'All',
-      'destination': CategoryList(),
-    },
-  ];
+  List<Map<String, dynamic>> categoryList = [];
+  bool isCategoryLoading = true;
+
+  Future<void> _fetchCategories() async {
+    final response = await http.get(
+      Uri.parse('https://offertree-backend.vercel.app/api/category'),
+    );
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        categoryList = data.map<Map<String, dynamic>>((category) {
+          return {
+            'label': category['name'],
+            'image': Image.asset('assets/house.png'),
+            'destination': Subcategory(
+              categoryId: category['id'],
+              name: category['name'],
+            ),
+          };
+        }).toList();
+        isCategoryLoading = false;
+      });
+    } else {
+      setState(() {
+        isCategoryLoading = false;
+      });
+      throw Exception('Failed to load categories');
+    }
+  }
 
   Future<void> _fetchInfiniteItems() async {
     if (isLoading) return;
@@ -61,18 +69,15 @@ class _DashboardState extends State<Dashboard> {
     });
 
     final response = await http.get(
-      Uri.parse(
-          'https://offertree-backend.vercel.app/api/ads?page=$currentPage'),
+      Uri.parse('https://offertree-backend.vercel.app/api/ads'),
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> newItems = json.decode(response.body);
       setState(() {
-        infiniteItems
-            .addAll(newItems.map((item) => item as Map<String, dynamic>));
+        infiniteItems =
+            newItems.map((item) => item as Map<String, dynamic>).toList();
         isLoading = false;
-        currentPage++;
-        hasMore = newItems.isNotEmpty;
       });
     } else {
       setState(() {
@@ -82,10 +87,15 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Future<List<dynamic>> fetchAdsFromApi() async {
+    final response = await http.get(
+      Uri.parse('https://offertree-backend.vercel.app/api/ads'),
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load ads');
+    }
   }
 
   @override
@@ -135,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
                   child: Row(
                     children: isLoading
                         ? List.generate(
-                            2, (index) => _buildCategoryItemShimmer())
+                            3, (index) => _buildCategoryItemShimmer())
                         : categoryList.map<Widget>((category) {
                             return _buildCategoryItem(
                               image: category['image'],
@@ -163,26 +173,25 @@ class _DashboardState extends State<Dashboard> {
                         ? List.generate(
                             9, (index) => _buildPropertyCardShimmer())
                         : [
-                            _buildPropertyCard(),
-                            _buildPropertyCard(),
-                            _buildPropertyCard(),
+                            _buildPropertyCards(),
+                            _buildPropertyCards(),
+                            _buildPropertyCards(),
                           ],
                   ),
                 ),
                 const SizedBox(height: 24),
                 _buildSectionHeader('More Items'),
                 const SizedBox(height: 16),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: infiniteItems.length + (isLoading ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == infiniteItems.length) {
-                      return buildInfiniteCardShimmer();
-                    }
-                    return buildInfiniteCard(context, infiniteItems[index]);
-                  },
-                ),
+                GestureDetector(
+                    onTap: () {},
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: infiniteItems.length,
+                      itemBuilder: (context, index) {
+                        return buildInfiniteCard(context, infiniteItems[index]);
+                      },
+                    ))
               ],
             ),
           ),
@@ -192,129 +201,132 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-//Property Card
-  Widget _buildPropertyCard() {
+//Property Cards
+  Widget _buildPropertyCards() {
     return FutureBuilder<List<dynamic>>(
       future: fetchAdsFromApi(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildPropertyCardShimmer();
+          // Display shimmer cards while loading
+          return Row(
+            children: List.generate(3, (index) => _buildPropertyCardShimmer()),
+          );
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('No ads available'));
         }
 
-        // Using the first ad from the fetched list.
-        var ad = snapshot.data!.first;
-        bool isLiked = false;
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AdDetails(),
-              ),
-            );
-          },
-          child: Container(
-            width: 200,
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(16)),
-                      child: Image.asset(
-                        'assets/svg/Illustrators/onbo_c.png',
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+        final ads = snapshot.data!;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: ads.map<Widget>((ad) {
+              bool isLiked = false;
+              return GestureDetector(
+                onTap: () {
+                  int adId = (ad['id']);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdDetails(
+                        adId,
+                        id: adId,
                       ),
                     ),
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isLiked = !isLiked;
-                          });
-                        },
-                        child: Icon(
-                          Iconsax.heart5,
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
+                  );
+                },
+                child: Container(
+                  width: 200,
+                  margin: const EdgeInsets.only(right: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '\$${ad["price"]}',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF576bd6),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        ad["title"],
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
+                      Stack(
                         children: [
-                          Icon(
-                            Iconsax.location,
-                            size: 16,
-                            color: Colors.grey[600],
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(16)),
+                            child: Image.asset(
+                              'assets/svg/Illustrators/onbo_c.png',
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            ad["location"],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: GestureDetector(
+                              onTap: () {
+                                // Toggle "like" status
+                                setState(() {
+                                  isLiked = !isLiked;
+                                });
+                              },
+                              child: Icon(
+                                Iconsax.heart5,
+                                color: Colors.redAccent,
+                              ),
                             ),
                           ),
                         ],
                       ),
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '\$${ad["price"]}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF576bd6),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              ad["title"],
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Iconsax.location,
+                                  size: 16,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  ad["location"],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              );
+            }).toList(),
           ),
         );
       },
     );
-  }
-
-  Future<List<dynamic>> fetchAdsFromApi() async {
-    final response = await http.get(
-      Uri.parse('https://offertree-backend.vercel.app/api/ads'),
-    );
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load ads');
-    }
   }
 
 //Property Shimmer

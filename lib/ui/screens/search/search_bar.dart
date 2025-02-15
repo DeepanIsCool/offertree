@@ -36,7 +36,8 @@ class HomeSearchField extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(start: 12.0, end: 12),
               child: Icon(Iconsax.search_normal, color: Colors.grey),
             ),
-            prefixIconConstraints: const BoxConstraints(minHeight: 5, minWidth: 5),
+            prefixIconConstraints:
+                const BoxConstraints(minHeight: 5, minWidth: 5),
           ),
         ),
       ),
